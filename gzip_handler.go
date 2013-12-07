@@ -22,12 +22,6 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Tell proxies that the content might vary
 	w.Header().Add(HeaderVary, HeaderAcceptEncoding)
 
-	// Ignore the client if it doesn't support the gzip content encoding
-	if HeaderHas(r.Header, HeaderAcceptEncoding, "gzip") {
-		self.h.ServeHTTP(w, r)
-		return
-	}
-
 	f, f_ok := w.(http.Flusher)
 	if !f_ok {
 		panic("ResponseWriter is not a Flusher")
@@ -36,6 +30,12 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cn, cn_ok := w.(http.CloseNotifier)
 	if !cn_ok {
 		panic("ResponseWriter is not a CloseNotifier")
+	}
+
+	// Ignore the client if it doesn't support the gzip content encoding
+	if HeaderHas(r.Header, HeaderAcceptEncoding, "gzip") {
+		self.h.ServeHTTP(w, r)
+		return
 	}
 
 	//
