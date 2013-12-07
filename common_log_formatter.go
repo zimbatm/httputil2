@@ -1,10 +1,10 @@
 package httputil2
 
 import (
-	"net/http"
-	"time"
-	"strings"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
 )
 
 const (
