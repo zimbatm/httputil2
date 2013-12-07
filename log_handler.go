@@ -1,6 +1,6 @@
 package httputil2
 
-// TODO: implement the http.Flusher, http.CloseNotifier and http.Hijacker interfaces
+// TODO: implement the http.Hijacker interfaces
 
 import (
 	"io"
@@ -62,4 +62,12 @@ func (self *logResponseWriter) Write(data []byte) (n int, err error) {
 	n, err = self.ResponseWriter.Write(data)
 	self.bytes += n
 	return
+}
+
+func (self *logResponseWriter) Flush() {
+	(self.ResponseWriter.(http.Flusher)).Flush()
+}
+
+func (self *logResponseWriter) CloseNotify() <-chan bool {
+	return (self.ResponseWriter.(http.CloseNotifier)).CloseNotify()
 }
