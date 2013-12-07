@@ -7,7 +7,6 @@ package httputil2
 import (
 	"compress/gzip"
 	"net/http"
-	"strings"
 	"sync"
 )
 
@@ -24,7 +23,7 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add(HeaderVary, HeaderAcceptEncoding)
 
 	// Ignore the client if it doesn't support the gzip content encoding
-	if !strings.Contains(r.Header.Get(HeaderAcceptEncoding), "gzip") {
+	if HeaderHas(r.Header, HeaderAcceptEncoding, "gzip") {
 		self.h.ServeHTTP(w, r)
 		return
 	}
