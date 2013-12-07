@@ -33,7 +33,7 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Ignore the client if it doesn't support the gzip content encoding
-	if HeaderHas(r.Header, HeaderAcceptEncoding, "gzip") {
+	if !HeaderHas(r.Header, HeaderAcceptEncoding, "gzip") {
 		self.h.ServeHTTP(w, r)
 		return
 	}
@@ -49,7 +49,7 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	self.h.ServeHTTP(gzw, r)
-	gzw.Flush()
+	gzw.gz.Close()
 }
 
 type gzipResponseWriter struct {
@@ -69,10 +69,10 @@ func (self *gzipResponseWriter) Header() http.Header {
 }
 
 func (self *gzipResponseWriter) WriteHeader(status int) {
-	self.wroteHeader = true
 	// Content-Length is wrong once compressed !
 	self.Header().Del(HeaderContentLength)
 	self.w.WriteHeader(status)
+	self.wroteHeader = true
 }
 
 func (self *gzipResponseWriter) Write(p []byte) (int, error) {
