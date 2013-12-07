@@ -3,10 +3,8 @@ package httputil2
 // TODO: implement the http.Flusher, http.CloseNotifier and http.Hijacker interfaces
 
 import (
-	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 )
 

@@ -1,5 +1,12 @@
 package httputil2
 
+import (
+	"net/http"
+	"time"
+	"strings"
+	"fmt"
+)
+
 const (
 	CommonLogFormat  = `%h %l %u %t "%r" %>s %b`
 	CommonDateFormat = "02/Jan/2006:15:04:05 -0700"

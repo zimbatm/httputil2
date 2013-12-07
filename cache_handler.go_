@@ -14,7 +14,7 @@ package httputil2
 import (
 	"io"
 	"net/http"
-	"url"
+	"net/url"
 )
 
 type EntityStore interface {
