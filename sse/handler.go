@@ -67,6 +67,7 @@ func (ew *ew) WriteHeader(code int) {
 	ew.headers = true
 	if ew.needPadding {
 		ew.Write(IEPadding) // 2kB padding for IE
+		ew.flush()
 	}
 }
 
@@ -74,11 +75,12 @@ func (ew *ew) Write(d []byte) (int, error) {
 	if !ew.headers {
 		ew.WriteHeader(http.StatusOK)
 	}
-	n, err := ew.ResponseWriter.Write(d)
-	ew.flush()
-	return n, err
+	return ew.ResponseWriter.Write(d)
 }
 
+// Writes the event to wire and flushes
 func (ew *ew) WriteEvent(e *Event) (int, error) {
-	return ew.Write([]byte(e.String()))
+	n, err := ew.Write([]byte(e.String()))
+	ew.flush()
+	return n, err
 }
