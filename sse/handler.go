@@ -32,7 +32,6 @@ type Handler func(w EventWriter, r *http.Request, lastID string, closed <-chan b
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
-	// w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	lastID := r.Header.Get("Last-Event-ID")
 	if lastID == "" { // IE Fallback
@@ -40,11 +39,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	closed := w.(http.CloseNotifier).CloseNotify()
-	ew := newEW(w)
+	ew := newEW(w, IsIE(r.Header))
 
-	if IsIE(r.Header) {
-		ew.Write(IEPadding) // 2kB padding for IE
-	}
 	// TODO: Make configurable?
 	// io.WriteString(w, "retry: 2000\n")
 
@@ -54,14 +50,30 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Event writer
 type ew struct {
 	http.ResponseWriter
-	flush func()
+	flush       func()
+	headers     bool
+	needPadding bool
 }
 
-func newEW(w http.ResponseWriter) *ew {
-	return &ew{w, w.(http.Flusher).Flush}
+func newEW(w http.ResponseWriter, needPadding bool) *ew {
+	return &ew{w, w.(http.Flusher).Flush, false, needPadding}
+}
+
+func (ew *ew) WriteHeader(code int) {
+	if ew.headers {
+		panic("Headers already written")
+	}
+	ew.ResponseWriter.WriteHeader(code)
+	ew.headers = true
+	if ew.needPadding {
+		ew.Write(IEPadding) // 2kB padding for IE
+	}
 }
 
 func (ew *ew) Write(d []byte) (int, error) {
+	if !ew.headers {
+		ew.WriteHeader(http.StatusOK)
+	}
 	n, err := ew.ResponseWriter.Write(d)
 	ew.flush()
 	return n, err
