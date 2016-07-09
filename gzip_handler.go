@@ -69,6 +69,9 @@ func (self *gzipResponseWriter) Header() http.Header {
 }
 
 func (self *gzipResponseWriter) WriteHeader(status int) {
+	if self.wroteHeader {
+		panic("wrote header twice")
+	}
 	// Content-Length is wrong once compressed !
 	self.Header().Del(HeaderContentLength)
 	self.w.WriteHeader(status)
