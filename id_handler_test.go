@@ -1,8 +1,8 @@
 package httputil2
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestIdHandlerRandomGenerator(t *testing.T) {
