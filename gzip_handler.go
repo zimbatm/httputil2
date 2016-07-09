@@ -47,9 +47,9 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		f:  f,
 		cn: cn,
 	}
+	defer gz.Close()
 
 	self.h.ServeHTTP(gzw, r)
-	gzw.gz.Close()
 }
 
 type gzipResponseWriter struct {
