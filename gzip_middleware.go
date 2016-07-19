@@ -45,7 +45,10 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//
 	w.Header().Set(HeaderContentEncoding, "gzip")
-	gz := gzip.NewWriterLevel(w, self.level)
+	gz, err := gzip.NewWriterLevel(w, self.level)
+	if err != nil {
+		panic("Invalid Gzip level: " + err.Error())
+	}
 	gzw := &gzipResponseWriter{
 		gz: gz,
 		w:  w,
