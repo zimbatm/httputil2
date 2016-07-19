@@ -8,4 +8,4 @@ combination with the net/http package from go's standard library.
 Recommended handler order
 -------------------------
 
-IdHandler - LogHandler - CacheHandler - GzipHandler - RecoverHandler - Application code
+RequestIDMiddleware - LogMiddleware - GzipMiddleware - RecoveryMiddleware - Application code
