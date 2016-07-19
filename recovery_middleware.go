@@ -10,13 +10,13 @@ import (
 type ErrorCallback func(error)
 
 // Recovers when a panic happens on a request
-func RecoverHandler(callback ErrorCallback) Middleware {
+func RecoveryMiddleware(callback ErrorCallback) Middleware {
 	if callback == nil {
 		callback = DefaultCallback
 	}
 
 	return func(h http.Handler) http.Handler {
-		return &recoverHandler{h, callback}
+		return &recoveryHandler{h, callback}
 	}
 }
 
@@ -24,12 +24,12 @@ func DefaultCallback(err error) {
 	log.Printf("ERR:", err)
 }
 
-type recoverHandler struct {
+type recoveryHandler struct {
 	h        http.Handler
 	callback ErrorCallback
 }
 
-func (self *recoverHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (self *recoveryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w2 := &recoverResponseWriter{w, false}
 	defer handleError(w2, self.callback)
 	self.h.ServeHTTP(w2, r)

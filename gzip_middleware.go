@@ -10,12 +10,17 @@ import (
 	"sync"
 )
 
-func GzipHandler(h http.Handler) http.Handler {
-	return &gzipHandler{h}
+// You can use gzip.DefaultCompression (-1) or any number between 0 (no
+// compression) and 9 (best compression)
+func GzipMiddleware(level int) Middleware {
+	return func(h http.Handler) http.Handler {
+		return &gzipHandler{h, level}
+	}
 }
 
 type gzipHandler struct {
-	h http.Handler
+	h     http.Handler
+	level int
 }
 
 func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +45,7 @@ func (self *gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//
 	w.Header().Set(HeaderContentEncoding, "gzip")
-	gz := gzip.NewWriter(w)
+	gz := gzip.NewWriterLevel(w, self.level)
 	gzw := &gzipResponseWriter{
 		gz: gz,
 		w:  w,

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestIdHandlerRandomGenerator(t *testing.T) {
+func TestRequestIDRandomGenerator(t *testing.T) {
 	g := RandomGenerator(32)
 	id := g()
 	if len(id) != 32 {

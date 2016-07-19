@@ -14,7 +14,7 @@ type basicAuthHandler struct {
 
 type BasicAuthChecker func(user string, pass string, req *http.Request) bool
 
-func BasicAuthHandler(h http.Handler, realm string, c BasicAuthChecker) Middleware {
+func BasicAuthMiddleware(h http.Handler, realm string, c BasicAuthChecker) Middleware {
 	return func(h http.Handler) http.Handler {
 		return &basicAuthHandler{h, realm, c}
 	}

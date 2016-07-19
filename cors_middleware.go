@@ -42,7 +42,7 @@ func init() {
 	)
 }
 
-func CORSHandler(origin string, maxAge int) Middleware {
+func CORSMiddleware(origin string, maxAge int) Middleware {
 	if len(origin) == 0 {
 		origin = "*"
 	}
