@@ -14,8 +14,10 @@ type basicAuthHandler struct {
 
 type BasicAuthChecker func(user string, pass string) bool
 
-func BasicAuthHandler(h http.Handler, realm string, c BasicAuthChecker) http.Handler {
-	return &basicAuthHandler{h, realm, c}
+func BasicAuthHandler(h http.Handler, realm string, c BasicAuthChecker) Middleware {
+	return func(h http.Handler) http.Handler {
+		return &basicAuthHandler{h, realm, c}
+	}
 }
 
 func (self *basicAuthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {

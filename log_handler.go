@@ -13,8 +13,10 @@ type LogFormatter interface {
 	ResponseLog(r *http.Request, start time.Time, status int, bytes int) string
 }
 
-func LogHandler(h http.Handler, w io.Writer, f LogFormatter) http.Handler {
-	return &logHandler{h, w, f}
+func LogHandler(w io.Writer, f LogFormatter) Middleware {
+	return func(h http.Handler) http.Handler {
+		return &logHandler{h, w, f}
+	}
 }
 
 type logHandler struct {

@@ -10,11 +10,14 @@ import (
 type ErrorCallback func(error)
 
 // Recovers when a panic happens on a request
-func RecoverHandler(h http.Handler, callback ErrorCallback) http.Handler {
+func RecoverHandler(callback ErrorCallback) Middleware {
 	if callback == nil {
 		callback = DefaultCallback
 	}
-	return &recoverHandler{h, callback}
+
+	return func(h http.Handler) http.Handler {
+		return &recoverHandler{h, callback}
+	}
 }
 
 func DefaultCallback(err error) {

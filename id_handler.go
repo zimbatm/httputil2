@@ -6,18 +6,16 @@ import (
 	"net/http"
 )
 
-const (
-	HeaderRequestId = "X-Request-Id"
-)
-
-// Tags a request X-Request-Id header with a given ID from the IdGenerator.
+// Tags a request X-Request-ID header with a given ID from the IdGenerator.
 //
 // To be used with the uuid lib for example
-func IdHandler(h http.Handler, g IdGenerator) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Set(HeaderRequestId, g())
-		h.ServeHTTP(w, r)
-	})
+func IdHandler(g IdGenerator) Middleware {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.Header.Set(HeaderXRequestID, g())
+			h.ServeHTTP(w, r)
+		})
+	}
 }
 
 type IdGenerator func() string

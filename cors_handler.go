@@ -23,14 +23,35 @@ const (
 	HeaderAccessControlMaxAge           = "Access-Control-Max-Age"
 )
 
-func CORSHandler(h http.Handler, origin string, maxAge int) http.Handler {
+func init() {
+	RequestHeaders = append(
+		RequestHeaders,
+		HeaderOrigin,
+		HeaderAccessControlRequestMethod,
+		HeaderAccessControlRequestHeaders,
+	)
+
+	ResponseHeaders = append(
+		RequestHeaders,
+		HeaderAccessControlAllowCredentials,
+		HeaderAccessControlAllowMethods,
+		HeaderAccessControlAllowOrigin,
+		HeaderAccessControlAllowOrigin,
+		HeaderAccessControlExposeHeaders,
+		HeaderAccessControlMaxAge,
+	)
+}
+
+func CORSHandler(origin string, maxAge int) Middleware {
 	if len(origin) == 0 {
 		origin = "*"
 	}
 	if maxAge <= 0 {
 		maxAge = 1728000
 	}
-	return &corsHandler{h, origin, true, maxAge, nil, []string{"any"}, nil}
+	return func(h http.Handler) http.Handler {
+		return &corsHandler{h, origin, true, maxAge, nil, []string{"any"}, nil}
+	}
 }
 
 type corsHandler struct {
