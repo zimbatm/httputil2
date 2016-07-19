@@ -12,7 +12,7 @@ type basicAuthHandler struct {
 	c     BasicAuthChecker
 }
 
-type BasicAuthChecker func(user string, pass string) bool
+type BasicAuthChecker func(user string, pass string, req *http.Request) bool
 
 func BasicAuthHandler(h http.Handler, realm string, c BasicAuthChecker) Middleware {
 	return func(h http.Handler) http.Handler {
@@ -30,7 +30,7 @@ func (self *basicAuthHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 			user := kv[0]
 			pass := kv[1]
 
-			ok := self.c(user, pass)
+			ok := self.c(user, pass, req)
 			if ok {
 				// Authorized
 				self.h.ServeHTTP(w, req)
