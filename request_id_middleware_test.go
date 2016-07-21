@@ -6,7 +6,7 @@ import (
 )
 
 func TestRequestIDRandomGenerator(t *testing.T) {
-	g := RandomGenerator(32)
+	g := RandomIDGenerator(32)
 	id := g()
 	if len(id) != 32 {
 		fmt.Println(len(id))
