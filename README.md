@@ -6,8 +6,21 @@ httputil2 - more go net/http extensions
 The httputil2 package contains common handlers and utilities to use in
 combination with the net/http package from go's standard library.
 
+Just pick and choose whatever is useful to you!
 
-Recommended handler order
--------------------------
+## Recommended middleware order
 
-RequestIDMiddleware - LogMiddleware - GzipMiddleware - RecoveryMiddleware - Application code
+From the list of avaiable middlewares, here is the recommended order:
+
+* RequestIDMiddleware (left-most)
+* LogMiddleware
+* GzipMiddleware
+* RecoveryMiddleware
+* Application code
+
+## Technical documentation
+
+Find all the goodies over at:
+
+https://godoc.org/github.com/zimbatm/httputil2
+
