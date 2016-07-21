@@ -1,7 +1,8 @@
 # httputil2 [![Build Status](https://travis-ci.org/zimbatm/httputil2.svg?branch=master)](https://travis-ci.org/zimbatm/httputil2) [![GoDoc](https://godoc.org/github.com/zimbatm/httputil2?status.svg)](http://godoc.org/github.com/zimbatm/httputil2)
 
-The httputil2 package contains common handlers and utilities to use in
-combination with the net/http package from go's standard library.
+What should really be in golang's net/http/httputil package.
+
+A collection of net/http utilities and middlewares to build your own stack.
 
 Just pick and choose whatever is useful to you!
 
