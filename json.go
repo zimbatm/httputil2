@@ -30,15 +30,3 @@ func WriteJSONWithStatus(w http.ResponseWriter, code int, v interface{}) (int, e
 
 	return w.Write(b)
 }
-
-// Standardize error messages
-func WriteError(w http.ResponseWriter, code int, typ string, reason string) {
-	WriteJSONWithStatus(w, code, map[string]string{
-		"type":   typ,
-		"reason": reason,
-	})
-}
-
-func JSONNotFound(w http.ResponseWriter, r *http.Request) {
-	WriteError(w, 404, "NotFound", r.URL.Path+" not found")
-}
