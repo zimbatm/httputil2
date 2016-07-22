@@ -6,7 +6,8 @@ import (
 
 type Middleware func(http.Handler) http.Handler
 type MiddlewareList struct {
-	l []Middleware
+	Handler http.Handler
+	l       []Middleware
 }
 
 // Appends more middlewares to the stack
@@ -14,8 +15,13 @@ func (ml MiddlewareList) Use(ms ...Middleware) {
 	ml.l = append(ml.l, ms...)
 }
 
-// Puts together all the middlewares together with the last one as the end-point
-func (ml *MiddlewareList) Chain(h http.Handler) http.Handler {
+// Puts the list of middleware together, with the last one being the provided
+// ml.Handler.
+func (ml *MiddlewareList) Chain() http.Handler {
+	h := ml.Handler
+	if h == nil {
+		return nil
+	}
 	if ml.l == nil {
 		return h
 	}
