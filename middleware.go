@@ -11,7 +11,7 @@ type MiddlewareList struct {
 }
 
 // Appends more middlewares to the stack
-func (ml MiddlewareList) Use(ms ...Middleware) {
+func (ml *MiddlewareList) Use(ms ...Middleware) {
 	ml.l = append(ml.l, ms...)
 }
 
