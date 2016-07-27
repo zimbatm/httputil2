@@ -16,3 +16,7 @@ From the list of avaiable middlewares, here is the recommended order:
 * RecoveryMiddleware
 * Application code
 
+## License
+
+All files in this projects are licensed under the ISC. See the LICENSE file
+for more details.
