@@ -12,6 +12,7 @@ From the list of avaiable middlewares, here is the recommended order:
 
 * RequestIDMiddleware (left-most)
 * LogMiddleware
+* CleanPathMiddleware
 * GzipMiddleware
 * RecoveryMiddleware
 * Application code
