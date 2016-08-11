@@ -31,6 +31,18 @@ func TestCleanPathMiddleware(t *testing.T) {
 		t.Error("Expected OK", w)
 	}
 
+	// Top-level
+	r, err = http.NewRequest(http.MethodGet, "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w = httptest.NewRecorder()
+	h.ServeHTTP(w, r)
+
+	if w.Code != http.StatusOK {
+		t.Error("Expected OK", w)
+	}
+
 	// Trailing slash
 	r, err = http.NewRequest(http.MethodGet, "/foo/", nil)
 	if err != nil {
