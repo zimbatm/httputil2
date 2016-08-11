@@ -21,7 +21,7 @@ func RecoveryMiddleware(callback ErrorCallback) Middleware {
 }
 
 func DefaultCallback(err error) {
-	log.Printf("ERR:", err)
+	log.Println("ERR:", err)
 }
 
 type recoveryHandler struct {

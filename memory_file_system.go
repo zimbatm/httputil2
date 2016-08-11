@@ -43,7 +43,11 @@ func (self MemoryFileSystem) Open(name string) (http.File, error) {
 
 		return &MemRef{bytes.NewReader(x.data), x, 0}, nil
 	}
-	return nil, &os.PathError{"open", name, fmt.Errorf("no such file or directory")}
+	return nil, &os.PathError{
+		Op:   "open",
+		Path: name,
+		Err:  fmt.Errorf("no such file or directory"),
+	}
 }
 
 func (self MemoryFileSystem) AddDir(path string) (err error) {
