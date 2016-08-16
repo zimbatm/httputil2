@@ -17,6 +17,8 @@ const (
 // See: https://httpd.apache.org/docs/1.3/logs.html
 // Example:
 //   CommonLog(os.Stdout)
+//
+// FIXME: Tokenize the string upfront
 func CommonLog(w io.Writer) *commonLog {
 	return &commonLog{w, CommonLogFormat}
 }
@@ -28,6 +30,7 @@ type commonLog struct {
 	format string
 }
 
+// Changes the pattern to use to write the logs to
 func (l *commonLog) SetFormat(format string) {
 	l.format = format
 }
