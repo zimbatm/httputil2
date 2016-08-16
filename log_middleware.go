@@ -73,3 +73,7 @@ func (self *logResponseWriter) Flush() {
 func (self *logResponseWriter) CloseNotify() <-chan bool {
 	return (self.ResponseWriter.(http.CloseNotifier)).CloseNotify()
 }
+
+var _ http.ResponseWriter = new(logResponseWriter)
+var _ http.Flusher = new(logResponseWriter)
+var _ http.CloseNotifier = new(logResponseWriter)

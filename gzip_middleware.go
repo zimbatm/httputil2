@@ -129,3 +129,7 @@ func (self *gzipResponseWriter) CloseNotify() <-chan bool {
 
 	return self.closeNotifyc
 }
+
+var _ http.ResponseWriter = new(gzipResponseWriter)
+var _ http.Flusher = new(gzipResponseWriter)
+var _ http.CloseNotifier = new(gzipResponseWriter)
