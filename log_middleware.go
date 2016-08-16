@@ -3,46 +3,34 @@ package httputil2
 // TODO: implement the http.Hijacker interfaces
 
 import (
-	"io"
 	"net/http"
 	"time"
 )
 
-type LogFormatter interface {
-	RequestLog(r *http.Request, start time.Time) string
-	ResponseLog(r *http.Request, start time.Time, status int, bytes int) string
+type HTTPLogger interface {
+	LogRequest(r *http.Request, start time.Time)
+	LogResponse(r *http.Request, start time.Time, status int, bytes int)
 }
 
-func LogMiddleware(w io.Writer, f LogFormatter) Middleware {
+func LogMiddleware(f HTTPLogger) Middleware {
 	return func(h http.Handler) http.Handler {
-		return &logHandler{h, w, f}
+		return &logHandler{h, f}
 	}
 }
 
 type logHandler struct {
 	h http.Handler
-	w io.Writer
-	f LogFormatter
+	l HTTPLogger
 }
 
 func (self *logHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var log string
-
 	start := time.Now()
-	log = self.f.RequestLog(r, start)
-	if len(log) > 0 {
-		// TODO: Handle write error
-		self.w.Write([]byte(log))
-	}
+	self.l.LogRequest(r, start)
 
 	lw := &logResponseWriter{w, 0, 0}
 	self.h.ServeHTTP(lw, r)
 
-	log = self.f.ResponseLog(r, start, lw.status, lw.bytes)
-	if len(log) > 0 {
-		// TODO: Handle write error
-		self.w.Write([]byte(log))
-	}
+	self.l.LogResponse(r, start, lw.status, lw.bytes)
 }
 
 type logResponseWriter struct {

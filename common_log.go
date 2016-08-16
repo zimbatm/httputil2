@@ -2,6 +2,7 @@ package httputil2
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -12,30 +13,51 @@ const (
 	CommonDateFormat = "02/Jan/2006:15:04:05 -0700"
 )
 
-// Implements the Apache Common Log Format formatting for the LogHandler
+// Implements the Apache Common Log Format formatting for the LogMiddleware
 // See: https://httpd.apache.org/docs/1.3/logs.html
 // Example:
-//   CommonLogFormatter(CommonLogFormat)
-func CommonLogFormatter(format string) LogFormatter {
-	return &commonLogFormatter{format}
+//   CommonLog(os.Stdout)
+func CommonLog(w io.Writer) *commonLog {
+	return &commonLog{w, CommonLogFormat}
 }
 
-type commonLogFormatter struct {
+var _ HTTPLogger = new(commonLog)
+
+type commonLog struct {
+	w      io.Writer
 	format string
 }
 
-func (self *commonLogFormatter) RequestLog(r *http.Request, start time.Time) string {
-	return ""
+func (l *commonLog) SetFormat(format string) {
+	l.format = format
 }
 
-func (self *commonLogFormatter) ResponseLog(r *http.Request, start time.Time, status int, bytes int) string {
-	line := self.format
+func (_ *commonLog) LogRequest(r *http.Request, start time.Time) {
+	return
+}
+
+func (l *commonLog) LogResponse(r *http.Request, start time.Time, status int, bytes int) {
+	line := l.Format(r, start, status, bytes)
+	l.w.Write([]byte(line))
+}
+
+func (l *commonLog) Format(r *http.Request, start time.Time, status int, bytes int) string {
+	line := l.format
 	// %h is the IP address of the remote host
 	line = strings.Replace(line, "%h", r.RemoteAddr, -1)
 	// %l is the ident and will not be implemented
 	line = strings.Replace(line, "%l", "-", -1)
-	// TODO: %u is the REMOTE_USER
-	line = strings.Replace(line, "%u", "-", -1)
+	// %u is the REMOTE_USER
+	{
+		var user string
+		u := r.URL.User
+		if u != nil && u.Username() != "" {
+			user = u.Username()
+		} else {
+			user = "-"
+		}
+		line = strings.Replace(line, "%u", user, -1)
+	}
 	// %t 10/Oct/2000:13:55:36 -0700
 	line = strings.Replace(line, "%t", start.Format(CommonDateFormat), -1)
 	// %r GET /apache_pb.gif HTTP/1.0
