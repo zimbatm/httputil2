@@ -68,8 +68,8 @@ type gzipResponseWriter struct {
 
 	wroteHeader bool
 
-	mu           sync.Mutex
-	closeNotifyc chan bool
+	closeNotifierMu sync.Mutex
+	closeNotifyCh   chan bool
 }
 
 func (self *gzipResponseWriter) Header() http.Header {
@@ -113,21 +113,23 @@ func (self *gzipResponseWriter) Flush() {
 
 // For the the http.CloseNotifier interface. The server fails without.
 func (self *gzipResponseWriter) CloseNotify() <-chan bool {
-	self.mu.Lock()
-	defer self.mu.Unlock()
-	if self.closeNotifyc == nil {
-		c := make(chan bool, 1)
+	self.closeNotifierMu.Lock()
+	ch := self.closeNotifyCh
+	if ch == nil {
+		ch = make(chan bool, 1)
+		self.closeNotifyCh = ch
 		pc := self.cn.CloseNotify()
 
 		go func() {
 			<-pc
 			// FIXME: Is this necessary ?
 			self.gz.Close()
-			c <- true
+			ch <- true
 		}()
 	}
 
-	return self.closeNotifyc
+	self.closeNotifierMu.Unlock()
+	return ch
 }
 
 var _ http.ResponseWriter = new(gzipResponseWriter)
