@@ -65,3 +65,15 @@ func (self *recoverResponseWriter) Write(data []byte) (int, error) {
 	}
 	return self.ResponseWriter.Write(data)
 }
+
+func (self *recoverResponseWriter) Flush() {
+	(self.ResponseWriter.(http.Flusher)).Flush()
+}
+
+func (self *recoverResponseWriter) CloseNotify() <-chan bool {
+	return (self.ResponseWriter.(http.CloseNotifier)).CloseNotify()
+}
+
+var _ http.ResponseWriter = new(recoverResponseWriter)
+var _ http.Flusher = new(recoverResponseWriter)
+var _ http.CloseNotifier = new(recoverResponseWriter)
