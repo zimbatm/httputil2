@@ -5,6 +5,8 @@ import (
 )
 
 type Middleware func(http.Handler) http.Handler
+
+// Deprecated, use httputil2.Chain instead
 type MiddlewareList struct {
 	Handler http.Handler
 	l       []Middleware
