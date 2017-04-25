@@ -1,4 +1,4 @@
-package httputil2_test
+package httputil2
 
 import (
 	"net"
@@ -6,8 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"sync"
-
-	"github.com/zimbatm/httputil2"
 )
 
 func ExampleNewTrackingListener() {
@@ -28,7 +26,7 @@ func ExampleNewTrackingListener() {
 		panic(err)
 	}
 	// And track them
-	l = httputil2.NewTrackingListener(l, done)
+	l = NewTrackingListener(l, done)
 
 	// Setup signal handling
 	c := make(chan os.Signal)

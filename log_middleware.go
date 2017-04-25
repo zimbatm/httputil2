@@ -3,6 +3,8 @@ package httputil2
 // TODO: implement the http.Hijacker interfaces
 
 import (
+	"bufio"
+	"net"
 	"net/http"
 	"time"
 )
@@ -62,6 +64,11 @@ func (self *logResponseWriter) CloseNotify() <-chan bool {
 	return (self.ResponseWriter.(http.CloseNotifier)).CloseNotify()
 }
 
+func (self *logResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return (self.ResponseWriter.(http.Hijacker)).Hijack()
+}
+
 var _ http.ResponseWriter = new(logResponseWriter)
 var _ http.Flusher = new(logResponseWriter)
 var _ http.CloseNotifier = new(logResponseWriter)
+var _ http.Hijacker = new(logResponseWriter)

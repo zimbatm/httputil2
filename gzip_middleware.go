@@ -5,7 +5,9 @@ package httputil2
 //       all written and then flush ?
 
 import (
+	"bufio"
 	"compress/gzip"
+	"net"
 	"net/http"
 	"sync"
 )
@@ -132,6 +134,11 @@ func (self *gzipResponseWriter) CloseNotify() <-chan bool {
 	return ch
 }
 
+func (self *gzipResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return (self.w.(http.Hijacker)).Hijack()
+}
+
 var _ http.ResponseWriter = new(gzipResponseWriter)
 var _ http.Flusher = new(gzipResponseWriter)
 var _ http.CloseNotifier = new(gzipResponseWriter)
+var _ http.Hijacker = new(gzipResponseWriter)
